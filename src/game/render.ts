@@ -2313,6 +2313,8 @@ function drawTabs(ctx: CanvasRenderingContext2D, g: GameState, x: number, y: num
   const tabs: { id: PanelId; label: string }[] = [
     { id: "stats", label: "STATS" },
     { id: "inventory", label: "INVENT." },
+    { id: "mining", label: "MINER." },
+    { id: "crafting", label: "CRAFT" },
     { id: "help", label: "AJUDA" },
     { id: "map", label: "MAPA" },
   ];
