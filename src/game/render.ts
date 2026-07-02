@@ -2607,3 +2607,231 @@ function drawWorldMap(ctx: CanvasRenderingContext2D, g: GameState, w: number, h:
     ctx.fillText(`${String(i + 1).padStart(2, "0")}. ${known ? b.name : "???"} (Lv ${b.danger})`, lx + 16, row);
   });
 }
+
+// -------------------------------------------------------------------------
+// Vein / Skeleton / Mining panel / Crafting panel
+// -------------------------------------------------------------------------
+
+type VeinLike = { pos: { x: number; y: number }; ore: keyof typeof ORES; kind: string; hp: number; maxHp: number; hitFlash: number; };
+
+function drawVein(ctx: CanvasRenderingContext2D, v: VeinLike, sx: number, sy: number, time: number) {
+  const meta = ORES[v.ore];
+  // shadow
+  ctx.fillStyle = "rgba(0,0,0,0.55)";
+  ctx.beginPath(); ctx.ellipse(sx, sy + 14, 14, 4, 0, 0, Math.PI * 2); ctx.fill();
+  // base rock
+  const rockCol = "#3a3a44";
+  ctx.fillStyle = rockCol; ctx.fillRect(sx - 12, sy - 10, 24, 20);
+  ctx.fillStyle = shade(rockCol, 12); ctx.fillRect(sx - 12, sy - 10, 24, 2);
+  ctx.fillStyle = shade(rockCol, -18); ctx.fillRect(sx - 12, sy + 8, 24, 2);
+  // ore crystals
+  const flash = v.hitFlash > 0 ? "#fff" : meta.color;
+  ctx.fillStyle = flash;
+  ctx.beginPath();
+  ctx.moveTo(sx - 6, sy + 6); ctx.lineTo(sx - 8, sy - 2); ctx.lineTo(sx - 4, sy - 6);
+  ctx.lineTo(sx + 0, sy - 2); ctx.lineTo(sx - 2, sy + 6); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(sx + 3, sy + 6); ctx.lineTo(sx + 2, sy - 4); ctx.lineTo(sx + 6, sy - 8);
+  ctx.lineTo(sx + 9, sy - 3); ctx.lineTo(sx + 8, sy + 6); ctx.closePath(); ctx.fill();
+  // sparkle
+  const twk = 0.5 + Math.sin(time * 4 + sx * 0.1) * 0.5;
+  ctx.fillStyle = `rgba(255,255,255,${0.4 + twk * 0.4})`;
+  ctx.fillRect(sx - 5, sy - 4, 1.5, 1.5);
+  ctx.fillRect(sx + 5, sy - 5, 1.5, 1.5);
+  // kind ornaments
+  if (v.kind === "runner") {
+    ctx.strokeStyle = "#80ffe0"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(sx, sy, 16 + Math.sin(time * 8) * 2, 0, Math.PI * 2); ctx.stroke();
+  } else if (v.kind === "exploder") {
+    ctx.fillStyle = "#ff8040";
+    ctx.beginPath(); ctx.arc(sx, sy - 12, 2 + Math.sin(time * 6) * 1, 0, Math.PI * 2); ctx.fill();
+  } else if (v.kind === "teleporter") {
+    ctx.strokeStyle = "#a080ff"; ctx.lineWidth = 1;
+    for (let i = 0; i < 3; i++) {
+      const rr = 8 + i * 4 + Math.sin(time * 3 + i) * 2;
+      ctx.beginPath(); ctx.arc(sx, sy, rr, 0, Math.PI * 2); ctx.stroke();
+    }
+  } else if (v.kind === "summoner") {
+    ctx.fillStyle = "#ff4060";
+    ctx.beginPath(); ctx.arc(sx - 6, sy - 12, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(sx + 6, sy - 12, 1.5, 0, Math.PI * 2); ctx.fill();
+  }
+  // HP bar
+  if (v.hp < v.maxHp) {
+    const bw = 22;
+    ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(sx - bw / 2 - 1, sy - 16, bw + 2, 4);
+    ctx.fillStyle = meta.color;
+    ctx.fillRect(sx - bw / 2, sy - 15, (bw * v.hp) / v.maxHp, 2);
+  }
+}
+
+function drawSkeleton(ctx: CanvasRenderingContext2D, sx: number, sy: number, time: number, hpRatio: number) {
+  const bob = Math.sin(time * 6) * 0.6;
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.beginPath(); ctx.ellipse(sx, sy + 12, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+  // body
+  ctx.fillStyle = "#e8e0c8";
+  ctx.fillRect(sx - 4, sy - 4 + bob, 8, 10);
+  // ribs
+  ctx.fillStyle = "#a89880";
+  ctx.fillRect(sx - 4, sy - 2 + bob, 8, 1);
+  ctx.fillRect(sx - 4, sy + 1 + bob, 8, 1);
+  // skull
+  ctx.fillStyle = "#f0e8d0";
+  ctx.beginPath(); ctx.arc(sx, sy - 8 + bob, 5, 0, Math.PI * 2); ctx.fill();
+  // eyes glow (necromancer purple)
+  ctx.fillStyle = "#c060ff";
+  ctx.fillRect(sx - 2.5, sy - 9 + bob, 1.5, 1.5);
+  ctx.fillRect(sx + 1, sy - 9 + bob, 1.5, 1.5);
+  // legs
+  ctx.fillStyle = "#e8e0c8";
+  ctx.fillRect(sx - 3, sy + 6 + bob, 2, 6);
+  ctx.fillRect(sx + 1, sy + 6 + bob, 2, 6);
+  // arm bone/sword
+  ctx.strokeStyle = "#c8c0a8"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(sx + 4, sy + bob); ctx.lineTo(sx + 12, sy - 4 + bob); ctx.stroke();
+  // hp bar
+  if (hpRatio < 1) {
+    ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(sx - 8, sy - 18, 16, 3);
+    ctx.fillStyle = "#a060ff"; ctx.fillRect(sx - 8, sy - 18, 16 * hpRatio, 3);
+  }
+}
+
+// ---- Mining panel ----
+function drawMining(ctx: CanvasRenderingContext2D, g: GameState, w: number, h: number) {
+  const bw = 640, bh = 460;
+  const x = w / 2 - bw / 2, y = h / 2 - bh / 2;
+  drawPixelFrame(ctx, x, y, bw, bh);
+  drawTabs(ctx, g, x + 8, y + 8, bw - 16, "mining");
+  const p = g.player;
+  const stats = miningStats(p.miningLevel);
+
+  ctx.fillStyle = "#f0c040"; ctx.font = "bold 14px monospace"; ctx.textAlign = "left";
+  ctx.fillText(`Mineração  Nv ${p.miningLevel}  (${p.miningXp}/${p.miningXpNext} XP)`, x + 20, y + 66);
+  const pick = p.equipped.pickaxe;
+  ctx.font = "11px monospace"; ctx.fillStyle = "#e8d8a8";
+  ctx.fillText(`Picareta: ${pick?.name ?? "(sem)"}   +${pick?.power ?? 0} poder`, x + 20, y + 84);
+  ctx.fillStyle = "#c8a878"; ctx.font = "10px monospace";
+  ctx.fillText(`Velocidade ${(stats.speed*100|0)}%  •  Crítico ${(stats.crit*100|0)}%  •  Duplo ${(stats.doubleChance*100|0)}%  •  Triplo ${(stats.tripleChance*100|0)}%  •  Gema ${(stats.gemChance*100|0)}%`, x + 20, y + 100);
+
+  // Pickaxe upgrade list
+  ctx.fillStyle = "#f0c040"; ctx.font = "bold 12px monospace";
+  ctx.fillText("PICARETAS (por nível de mineração)", x + 20, y + 128);
+  const rows = PICKAXE_TIERS;
+  const rowH = 22;
+  const listX = x + 20, listY = y + 138;
+  const hits: Array<{ tier: number; rect: [number, number, number, number] }> = [];
+  rows.forEach((r, i) => {
+    const ry = listY + i * rowH;
+    const unlocked = p.miningLevel >= r.miningLevel;
+    const equipped = pick?.pickaxeTier === r.tier;
+    ctx.fillStyle = equipped ? "#3a5a2a" : unlocked ? "#1a1408" : "#0f0906";
+    ctx.fillRect(listX, ry, 300, rowH - 2);
+    ctx.strokeStyle = "#3a2410"; ctx.strokeRect(listX + 0.5, ry + 0.5, 300, rowH - 3);
+    ctx.fillStyle = r.color; ctx.font = "bold 11px monospace";
+    ctx.fillText(`⛏ ${r.name}`, listX + 8, ry + 15);
+    ctx.fillStyle = unlocked ? "#e8d8a8" : "#6a5a3a"; ctx.font = "10px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(`Nv ${r.miningLevel}+  +${r.power}`, listX + 292, ry + 15);
+    ctx.textAlign = "left";
+    if (unlocked && !equipped) hits.push({ tier: r.tier, rect: [listX, ry, 300, rowH - 2] });
+  });
+
+  // Materials owned
+  const matsX = x + 340;
+  ctx.fillStyle = "#f0c040"; ctx.font = "bold 12px monospace";
+  ctx.fillText("MATERIAIS", matsX, y + 128);
+  const owned = Object.entries(p.materials).filter(([, n]) => n > 0);
+  ctx.font = "10px monospace";
+  owned.slice(0, 16).forEach(([ore, n], i) => {
+    const meta = ORES[ore as keyof typeof ORES];
+    const oy = y + 142 + i * 15;
+    if (meta) {
+      ctx.fillStyle = meta.color; ctx.fillRect(matsX, oy - 8, 6, 8);
+      ctx.fillStyle = "#e8d8a8"; ctx.fillText(`${meta.name}`, matsX + 12, oy);
+    } else {
+      ctx.fillStyle = "#e8d8a8"; ctx.fillText(ore, matsX + 12, oy);
+    }
+    ctx.textAlign = "right"; ctx.fillStyle = "#fff";
+    ctx.fillText(String(n), matsX + 268, oy);
+    ctx.textAlign = "left";
+  });
+  if (owned.length === 0) {
+    ctx.fillStyle = "#6a5a3a"; ctx.fillText("(nenhum — minere veios no mapa)", matsX, y + 148);
+  }
+
+  ctx.fillStyle = "#c8a878"; ctx.font = "9px monospace";
+  ctx.fillText("clique numa picareta liberada para equipar  •  N fecha", x + 16, y + bh - 12);
+
+  (g as unknown as { _mineGrid?: typeof hits })._mineGrid = hits;
+}
+
+// ---- Crafting panel ----
+function drawCrafting(ctx: CanvasRenderingContext2D, g: GameState, w: number, h: number) {
+  const bw = 720, bh = 480;
+  const x = w / 2 - bw / 2, y = h / 2 - bh / 2;
+  drawPixelFrame(ctx, x, y, bw, bh);
+  drawTabs(ctx, g, x + 8, y + 8, bw - 16, "crafting");
+  const p = g.player;
+
+  // Profession tabs
+  const profs = PROFESSION_LIST;
+  const pw = Math.floor((bw - 40) / profs.length);
+  const profHits: Array<{ id: string; rect: [number, number, number, number] }> = [];
+  profs.forEach((pr, i) => {
+    const px = x + 20 + i * pw;
+    const active = g.craftingTab === pr;
+    ctx.fillStyle = active ? "#f0c040" : "#2a1c10";
+    ctx.fillRect(px, y + 54, pw - 2, 24);
+    ctx.fillStyle = active ? "#1a0a04" : "#c8a878";
+    ctx.font = "bold 10px monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const lvl = p.professions[pr].level;
+    ctx.fillText(`${PROFESSION_NAME[pr]} ${lvl}`, px + pw / 2, y + 66);
+    profHits.push({ id: pr, rect: [px, y + 54, pw - 2, 24] });
+  });
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+
+  const activeProf = g.craftingTab as typeof profs[number];
+  const profState = p.professions[activeProf];
+  ctx.fillStyle = "#e8d8a8"; ctx.font = "10px monospace";
+  ctx.fillText(`Bancada: ${BENCH_NAME[PROFESSION_BENCH[activeProf]]}  •  XP ${profState.xp}/${profState.xpNext}`, x + 20, y + 96);
+
+  // Recipe list
+  const recs = RECIPES.filter(r => r.profession === activeProf && (!r.hidden || p.recipesKnown.has(r.id)));
+  const rowH = 30;
+  const listX = x + 20, listY = y + 110;
+  const rowW = bw - 40;
+  const hits: Array<{ id: string; rect: [number, number, number, number] }> = [];
+  recs.slice(0, 11).forEach((r, i) => {
+    const ry = listY + i * rowH;
+    const chk = canCraftRecipe(g, r.id);
+    const ok = chk.ok;
+    ctx.fillStyle = ok ? "#1a2a12" : "#1a1408";
+    ctx.fillRect(listX, ry, rowW, rowH - 3);
+    ctx.strokeStyle = "#3a2410"; ctx.strokeRect(listX + 0.5, ry + 0.5, rowW - 1, rowH - 4);
+    ctx.fillStyle = ok ? "#a0f090" : "#e8d8a8"; ctx.font = "bold 12px monospace";
+    ctx.fillText(`${r.secret ? "✦ " : ""}${r.name}`, listX + 8, ry + 13);
+    ctx.fillStyle = "#c8a878"; ctx.font = "10px monospace";
+    const matsStr = Object.entries(r.materials).map(([o, n]) => {
+      const have = p.materials[o] ?? 0;
+      const meta = ORES[o as keyof typeof ORES];
+      return `${meta?.name ?? o} ${have}/${n}`;
+    }).join("  •  ");
+    ctx.fillText(`Nv ${r.minLevel}+   ${matsStr}`, listX + 8, ry + 24);
+    // craft button
+    const bx = listX + rowW - 84, by = ry + 4, bwB = 78, bhB = 20;
+    ctx.fillStyle = "#0a0604"; ctx.fillRect(bx - 1, by - 1, bwB + 2, bhB + 2);
+    ctx.fillStyle = ok ? "#3a8a3a" : "#3a2410"; ctx.fillRect(bx, by, bwB, bhB);
+    ctx.fillStyle = ok ? "#fff" : "#8a6438"; ctx.font = "bold 11px monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(ok ? "FABRICAR" : (chk.reason ?? "—"), bx + bwB / 2, by + bhB / 2 + 1);
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    if (ok) hits.push({ id: r.id, rect: [bx, by, bwB, bhB] });
+  });
+
+  ctx.fillStyle = "#c8a878"; ctx.font = "9px monospace";
+  ctx.fillText("clique num profissão para trocar  •  FABRICAR para produzir  •  B fecha", x + 16, y + bh - 12);
+
+  (g as unknown as { _craftHits?: typeof hits; _craftProfs?: typeof profHits })._craftHits = hits;
+  (g as unknown as { _craftHits?: typeof hits; _craftProfs?: typeof profHits })._craftProfs = profHits;
+}
