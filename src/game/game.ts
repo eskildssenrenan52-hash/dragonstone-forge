@@ -763,6 +763,37 @@ export function update(g: GameState, dt: number, input: Input, canvasW: number, 
     }
   }
 
+  // minions (necromancer skeletons)
+  if (p.minions.length) {
+    for (const m of [...p.minions]) {
+      m.life -= dt;
+      m.attackCd = Math.max(0, m.attackCd - dt);
+      if (m.life <= 0 || m.hp <= 0) { p.minions = p.minions.filter(x => x !== m); continue; }
+      // Find nearest enemy
+      let best: Enemy | null = null; let bestD = 340;
+      for (const e of g.enemies) {
+        const dx = e.pos.x - m.pos.x, dy = e.pos.y - m.pos.y;
+        const d = Math.hypot(dx, dy);
+        if (d < bestD) { bestD = d; best = e; }
+      }
+      if (best) {
+        const dx = best.pos.x - m.pos.x, dy = best.pos.y - m.pos.y;
+        const d = Math.hypot(dx, dy) || 1;
+        if (d > 20) moveEntity(g, m.pos, (dx / d) * 130 * dt, (dy / d) * 130 * dt, 8);
+        if (d < 26 && m.attackCd <= 0) {
+          m.attackCd = 0.7;
+          damageEnemy(g, best, Math.floor(6 + p.attr.int * 1.2 + p.level));
+        }
+      } else {
+        // follow player
+        const dx = p.pos.x - m.pos.x, dy = p.pos.y - m.pos.y;
+        const d = Math.hypot(dx, dy) || 1;
+        if (d > 60) moveEntity(g, m.pos, (dx / d) * 100 * dt, (dy / d) * 100 * dt, 8);
+      }
+    }
+  }
+
+
   // projectiles
   for (const pr of [...g.projectiles]) {
     pr.pos.x += pr.vel.x * 60 * dt;
