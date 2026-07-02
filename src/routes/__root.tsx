@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Eternal Realms — RPG de ação offline" },
+      { name: "description", content: "Explore o continente de Asterion: 40 biomas, masmorras profundas, chefes e loot lendário. Um RPG 2D de ação para jogar direto no navegador." },
+      { name: "author", content: "Eternal Realms" },
+      { property: "og:title", content: "Eternal Realms" },
+      { property: "og:description", content: "RPG 2D offline com 40 biomas, cavernas e chefes épicos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
