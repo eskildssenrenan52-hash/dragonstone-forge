@@ -1817,7 +1817,7 @@ function drawProjectile(ctx: CanvasRenderingContext2D, sx: number, sy: number, f
 function drawPlayer(ctx: CanvasRenderingContext2D, p: import("./engine").Player, psx: number, psy: number, time: number) {
   const bob = Math.sin(time*4) * 0.6;
   // Try class sprite first
-  const clsSlug = p.cls === "magic" ? "mago" : p.cls === "paladin" ? "paladino" : "guerreiro";
+  const clsSlug = CLASS_INFO[p.cls]?.sprite ?? "guerreiro";
   const sprite = getSpriteBySlug(clsSlug);
   if (sprite) {
     ctx.fillStyle = "rgba(0,0,0,0.45)";
