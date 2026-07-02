@@ -284,27 +284,87 @@ function damagePlayer(g: GameState, dmg: number) {
   }
 }
 
+function classSkills(cls: import("./engine").PlayerClass): import("./engine").Skill[] {
+  if (cls === "melee") return [
+    { id: "cleave", name: "Corte Amplo", cost: 10, cd: 0, cur: 0, desc: "Golpe em cone", key: "1" },
+    { id: "shield", name: "Guarda de Ferro", cost: 12, cd: 0, cur: 0, desc: "Invulnerável 1.5s", key: "2" },
+    { id: "slash",  name: "Golpe Giratório", cost: 15, cd: 0, cur: 0, desc: "Dano em área ao redor", key: "3" },
+    { id: "dash",   name: "Investida", cost: 5, cd: 0, cur: 0, desc: "Impulso na direção", key: "4" },
+  ];
+  if (cls === "magic") return [
+    { id: "bolt",     name: "Raio Arcano", cost: 12, cd: 0, cur: 0, desc: "Projétil rápido", key: "1" },
+    { id: "fireball", name: "Bola de Fogo", cost: 22, cd: 0, cur: 0, desc: "Explosão em área", key: "2" },
+    { id: "heal",     name: "Cura Menor", cost: 15, cd: 0, cur: 0, desc: "Restaura HP", key: "3" },
+    { id: "dash",     name: "Piscar", cost: 8, cd: 0, cur: 0, desc: "Teleporte curto", key: "4" },
+  ];
+  if (cls === "paladin") return [
+    { id: "smite", name: "Golpe Sagrado", cost: 18, cd: 0, cur: 0, desc: "Dano sagrado + cura", key: "1" },
+    { id: "heal",  name: "Bênção", cost: 15, cd: 0, cur: 0, desc: "Restaura HP", key: "2" },
+    { id: "slash", name: "Golpe Giratório", cost: 10, cd: 0, cur: 0, desc: "Dano em área", key: "3" },
+    { id: "dash",  name: "Avanço Sagrado", cost: 5, cd: 0, cur: 0, desc: "Impulso na direção", key: "4" },
+  ];
+  if (cls === "necro") return [
+    { id: "drain",  name: "Dreno de Vida", cost: 12, cd: 0, cur: 0, desc: "Projétil que cura", key: "1" },
+    { id: "summon", name: "Invocar Esqueleto", cost: 25, cd: 0, cur: 0, desc: "Invoca aliado 20s", key: "2" },
+    { id: "bolt",   name: "Raio Sombrio", cost: 10, cd: 0, cur: 0, desc: "Projétil arcano", key: "3" },
+    { id: "heal",   name: "Sangria Reversa", cost: 18, cd: 0, cur: 0, desc: "Restaura HP", key: "4" },
+  ];
+  // archer
+  return [
+    { id: "quickshot", name: "Tiro Rápido", cost: 6, cd: 0, cur: 0, desc: "Flecha veloz longa", key: "1" },
+    { id: "rain",      name: "Chuva de Flechas", cost: 20, cd: 0, cur: 0, desc: "Flechas em área", key: "2" },
+    { id: "dash",      name: "Salto Ágil", cost: 5, cd: 0, cur: 0, desc: "Impulso ágil", key: "3" },
+    { id: "heal",      name: "Bandagem", cost: 12, cd: 0, cur: 0, desc: "Restaura HP", key: "4" },
+  ];
+}
+
 function useSkill(g: GameState, id: string) {
   const p = g.player;
   const s = p.skills.find(x => x.id === id);
   if (!s || s.cur > 0 || p.mp < s.cost) return;
   p.mp -= s.cost;
+  const len = Math.hypot(p.facing.x, p.facing.y) || 1;
+  const fx = p.facing.x / len, fy = p.facing.y / len;
   if (id === "slash") {
     s.cd = 0.6; s.cur = s.cd;
-    const r = 80;
+    const r = 90;
     for (const e of [...g.enemies]) {
       const dx = e.pos.x - p.pos.x, dy = e.pos.y - p.pos.y;
       if (dx * dx + dy * dy < r * r) damageEnemy(g, e, p.atk() * 1.4);
     }
+  } else if (id === "cleave") {
+    s.cd = 0.8; s.cur = s.cd;
+    const r = 110;
+    for (const e of [...g.enemies]) {
+      const dx = e.pos.x - p.pos.x, dy = e.pos.y - p.pos.y;
+      const d = Math.hypot(dx, dy);
+      if (d < r) {
+        const dot = (dx / d) * fx + (dy / d) * fy;
+        if (dot > 0.2) damageEnemy(g, e, p.atk() * 1.8);
+      }
+    }
+  } else if (id === "shield") {
+    s.cd = 8; s.cur = s.cd;
+    p.invuln = 1.5;
+    g.floaters.push({ x: p.pos.x, y: p.pos.y - 8, text: "Guarda!", color: "#a0c0ff", life: 1, vy: -30 });
   } else if (id === "bolt") {
     s.cd = 0.4; s.cur = s.cd;
-    const len = Math.hypot(p.facing.x, p.facing.y) || 1;
     g.projectiles.push({
-      pos: { x: p.pos.x, y: p.pos.y },
-      vel: { x: (p.facing.x / len) * 8, y: (p.facing.y / len) * 8 },
-      life: 1.2, damage: Math.floor(p.atk() * 1.6 + p.attr.int * 2),
-      from: "player",
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 8, y: fy * 8 },
+      life: 1.2, damage: Math.floor(p.atk() * 1.6 + p.attr.int * 2), from: "player",
     });
+  } else if (id === "fireball") {
+    s.cd = 1.6; s.cur = s.cd;
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 6, y: fy * 6 },
+      life: 1.4, damage: Math.floor(p.atk() * 2.2 + p.attr.int * 4), from: "player",
+    });
+    // pseudo-AoE: hit enemies close to trajectory next tick already handled by projectile collide;
+    // emulate AoE by damaging near landing point too
+    for (const e of [...g.enemies]) {
+      const dx = e.pos.x - (p.pos.x + fx * 200), dy = e.pos.y - (p.pos.y + fy * 200);
+      if (dx * dx + dy * dy < 90 * 90) damageEnemy(g, e, p.atk() * 1.2);
+    }
   } else if (id === "heal") {
     s.cd = 4; s.cur = s.cd;
     const amt = 30 + p.attr.int * 3;
@@ -312,20 +372,86 @@ function useSkill(g: GameState, id: string) {
     g.floaters.push({ x: p.pos.x, y: p.pos.y - 8, text: `+${amt}`, color: "#60ff80", life: 1, vy: -30 });
   } else if (id === "dash") {
     s.cd = 1.5; s.cur = s.cd;
-    const len = Math.hypot(p.facing.x, p.facing.y) || 1;
-    for (let i = 0; i < 8; i++) moveEntity(g, p.pos, (p.facing.x / len) * 8, (p.facing.y / len) * 8);
+    for (let i = 0; i < 8; i++) moveEntity(g, p.pos, fx * 8, fy * 8);
     p.invuln = 0.3;
+  } else if (id === "smite") {
+    s.cd = 0.9; s.cur = s.cd;
+    let hit = false;
+    for (const e of [...g.enemies]) {
+      const dx = e.pos.x - p.pos.x, dy = e.pos.y - p.pos.y;
+      if (dx * dx + dy * dy < 70 * 70) { damageEnemy(g, e, p.atk() * 2.0); hit = true; }
+    }
+    if (hit) { p.hp = Math.min(p.maxHp, p.hp + 12 + p.attr.int); g.floaters.push({ x: p.pos.x, y: p.pos.y - 8, text: "Sagrado!", color: "#fff080", life: 1, vy: -30 }); }
+  } else if (id === "drain") {
+    s.cd = 0.5; s.cur = s.cd;
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 7, y: fy * 7 },
+      life: 1.4, damage: Math.floor(p.atk() * 1.3 + p.attr.int * 2), from: "player",
+    });
+    // Heal a small tick per cast
+    p.hp = Math.min(p.maxHp, p.hp + 4 + Math.floor(p.attr.int * 0.4));
+  } else if (id === "summon") {
+    s.cd = 8; s.cur = s.cd;
+    const hp = 40 + p.attr.int * 5 + p.level * 4;
+    p.minions.push({
+      pos: { x: p.pos.x + fx * 24, y: p.pos.y + fy * 24 }, vel: { x: 0, y: 0 },
+      target: null, hp, maxHp: hp, life: 22, kind: "skeleton", attackCd: 0,
+    });
+    g.floaters.push({ x: p.pos.x, y: p.pos.y - 8, text: "Esqueleto!", color: "#c060ff", life: 1, vy: -30 });
+  } else if (id === "quickshot") {
+    s.cd = 0.2; s.cur = s.cd;
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 14, y: fy * 14 },
+      life: 1.8, damage: Math.floor(p.atk() * 1.5 + p.attr.agi * 2), from: "player",
+    });
+  } else if (id === "rain") {
+    s.cd = 2.5; s.cur = s.cd;
+    for (let i = 0; i < 8; i++) {
+      const ang = (i / 8) * Math.PI * 2;
+      g.projectiles.push({
+        pos: { x: p.pos.x, y: p.pos.y }, vel: { x: Math.cos(ang) * 8, y: Math.sin(ang) * 8 },
+        life: 1.2, damage: Math.floor(p.atk() * 1.1 + p.attr.agi), from: "player",
+      });
+    }
   }
 }
 
 function basicAttack(g: GameState) {
   const p = g.player;
   if (p.attackCd > 0) return;
-  p.attackCd = 0.25;
   const len = Math.hypot(p.facing.x, p.facing.y) || 1;
+  const fx = p.facing.x / len, fy = p.facing.y / len;
+  if (p.cls === "archer") {
+    p.attackCd = 0.18;
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 12, y: fy * 12 },
+      life: 1.4, damage: p.atk() + Math.floor(p.attr.agi * 0.6), from: "player",
+    });
+    return;
+  }
+  if (p.cls === "necro") {
+    p.attackCd = 0.35;
+    // dark bolt; on hit heals a bit — approximated by small heal per shot fired
+    p.hp = Math.min(p.maxHp, p.hp + 1);
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 8, y: fy * 8 },
+      life: 1, damage: p.atk() + Math.floor(p.attr.int * 0.6), from: "player",
+    });
+    return;
+  }
+  if (p.cls === "magic") {
+    p.attackCd = 0.32;
+    g.projectiles.push({
+      pos: { x: p.pos.x, y: p.pos.y }, vel: { x: fx * 9, y: fy * 9 },
+      life: 0.8, damage: p.atk() + Math.floor(p.attr.int * 0.5), from: "player",
+    });
+    return;
+  }
+  // melee / paladin: default
+  p.attackCd = 0.25;
   g.projectiles.push({
     pos: { x: p.pos.x, y: p.pos.y },
-    vel: { x: (p.facing.x / len) * 10, y: (p.facing.y / len) * 10 },
+    vel: { x: fx * 10, y: fy * 10 },
     life: 0.5, damage: p.atk(), from: "player",
   });
 }
