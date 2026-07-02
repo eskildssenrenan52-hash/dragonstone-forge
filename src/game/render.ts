@@ -2069,7 +2069,25 @@ export function render(ctx: CanvasRenderingContext2D, g: GameState, w: number, h
     ctx.fillText(f.text, f.x - camX, f.y - camY);
   }
 
-  // day/night tint (skip in caves) + cave vignette
+  // falling meteors (event)
+  if (g.meteors && g.meteors.length) {
+    for (const m of g.meteors) {
+      const sx = m.x - camX, sy = m.y - camY;
+      // fire trail
+      ctx.fillStyle = "rgba(255,140,60,0.5)";
+      for (let i = 0; i < 8; i++) {
+        const t = i / 8;
+        ctx.fillRect(sx - 3 + Math.sin(g.time * 20 + i) * 2, sy - i * 14, 6 - t * 5, 4);
+      }
+      // meteor body
+      ctx.fillStyle = "#ff6030";
+      ctx.beginPath(); ctx.arc(sx, sy, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff080";
+      ctx.beginPath(); ctx.arc(sx - 2, sy - 2, 4, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // day/night tint (skip in caves) + cave vignette + blood moon
   if (inCave && g.activeFloor !== 4) {
     const grd = ctx.createRadialGradient(w / 2, h / 2, 60, w / 2, h / 2, Math.max(w, h) * 0.7);
     grd.addColorStop(0, "rgba(0,0,0,0)");
@@ -2080,12 +2098,27 @@ export function render(ctx: CanvasRenderingContext2D, g: GameState, w: number, h
     const night = Math.max(0, Math.sin(t01 * Math.PI * 2)) * 0.35;
     if (night > 0) { ctx.fillStyle = `rgba(0,0,40,${night})`; ctx.fillRect(0, 0, w, h); }
   }
+  if (g.activeEvent?.kind === "bloodMoon") {
+    ctx.fillStyle = "rgba(180,20,40,0.28)"; ctx.fillRect(0, 0, w, h);
+    // moon
+    ctx.fillStyle = "#ff4060";
+    ctx.beginPath(); ctx.arc(w - 80, 90, 34, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#a01020";
+    ctx.beginPath(); ctx.arc(w - 70, 82, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w - 92, 100, 6, 0, Math.PI * 2); ctx.fill();
+  }
+  if (g.activeEvent?.kind === "earthquake") {
+    const sh = Math.sin(g.time * 40) * 3;
+    ctx.fillStyle = "rgba(120,80,20,0.15)"; ctx.fillRect(sh, sh, w, h);
+  }
 
   drawHUD(ctx, g, w, h);
   if (g.panel === "inventory") drawInventory(ctx, g, w, h);
   else if (g.panel === "stats") drawStats(ctx, g, w, h);
   else if (g.panel === "help") drawHelp(ctx, g, w, h);
   else if (g.panel === "map") drawWorldMap(ctx, g, w, h);
+  else if (g.panel === "mining") drawMining(ctx, g, w, h);
+  else if (g.panel === "crafting") drawCrafting(ctx, g, w, h);
   if (g.paused) {
     ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = "#fff"; ctx.font = "bold 32px monospace"; ctx.textAlign = "center";
