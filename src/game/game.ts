@@ -78,6 +78,7 @@ export function newGame(seed = Math.floor(Math.random() * 99999), cls: PlayerCla
   const b = CLASS_INFO[cls].base;
   player.attr = { str: b.str, agi: b.agi, int: b.int, vit: b.vit };
   player.maxHp = b.hp; player.hp = b.hp; player.maxMp = b.mp; player.mp = b.mp;
+  player.skills = classSkills(cls);
 
   player.pos = { x: world.spawn.x, y: world.spawn.y };
   player.equipped.weapon = makeItem("weapon", 1, "comum");
