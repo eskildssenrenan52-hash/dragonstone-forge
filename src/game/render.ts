@@ -2279,7 +2279,7 @@ function drawMinimap(ctx: CanvasRenderingContext2D, g: GameState, x: number, y: 
 }
 
 // ===== Pixel-art modal shell (matches reference RPG UI) =====
-type PanelId = "inventory" | "stats" | "help" | "map";
+type PanelId = "inventory" | "stats" | "help" | "map" | "mining" | "crafting";
 type TabHit = { id: PanelId; rect: [number, number, number, number] };
 
 function drawPixelFrame(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
