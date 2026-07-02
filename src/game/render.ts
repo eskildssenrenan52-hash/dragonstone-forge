@@ -1,6 +1,8 @@
-import { TILE, BIOMES, type Enemy } from "./engine";
+import { TILE, BIOMES, CLASS_INFO, PROFESSION_LIST, PROFESSION_NAME, type Enemy } from "./engine";
 import type { GameState } from "./game";
 import { getEnemySprite, getSpriteBySlug } from "./sprites";
+import { ORES, PICKAXE_TIERS, miningStats } from "./mining";
+import { RECIPES, canCraftRecipe, PROFESSION_BENCH, BENCH_NAME } from "./crafting";
 
 const BIOME_COLOR: Record<number, { base: string; accent: string }> = {};
 for (const b of BIOMES) BIOME_COLOR[b.id] = { base: b.color, accent: b.accent };
