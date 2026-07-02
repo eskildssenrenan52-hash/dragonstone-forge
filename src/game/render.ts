@@ -2009,6 +2009,25 @@ export function render(ctx: CanvasRenderingContext2D, g: GameState, w: number, h
     drawLoot(ctx, sx, sy, l.item.icon, l.item.color, g.time);
   }
 
+  // veins (mining nodes)
+  if (g.veins) {
+    for (const v of g.veins) {
+      const sx = v.pos.x - camX, sy = v.pos.y - camY;
+      if (sx < -40 || sy < -40 || sx > w + 40 || sy > h + 40) continue;
+      drawVein(ctx, v, sx, sy, g.time);
+    }
+  }
+
+  // necromancer minions
+  if (g.player.minions && g.player.minions.length) {
+    for (const m of g.player.minions) {
+      const sx = m.pos.x - camX, sy = m.pos.y - camY;
+      if (sx < -40 || sy < -40 || sx > w + 40 || sy > h + 40) continue;
+      drawSkeleton(ctx, sx, sy, g.time, m.hp / m.maxHp);
+    }
+  }
+
+
   // enemies
   for (const e of g.enemies) {
     const sx = e.pos.x - camX, sy = e.pos.y - camY;
