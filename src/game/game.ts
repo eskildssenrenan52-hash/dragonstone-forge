@@ -898,6 +898,10 @@ export function load(): GameState | null {
     const data = JSON.parse(raw);
     const g = newGame(data.seed);
     Object.assign(g.player, data.player);
+    if (!g.player.minions) g.player.minions = [];
+    if (!g.player.materials) g.player.materials = {};
+    if (!g.player.recipesKnown) g.player.recipesKnown = new Set();
+    g.player.skills = classSkills(g.player.cls);
     g.kills = data.kills; g.bossKills = data.bossKills;
     g.discovered = new Set(data.discovered);
     g.camera = { x: g.player.pos.x, y: g.player.pos.y };
