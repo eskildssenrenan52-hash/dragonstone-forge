@@ -142,3 +142,160 @@
     color: var(--color-foreground);
   }
 }
+
+:root {
+  --game-5ed86a: #5ed86a;
+  --game-8a6438: #8a6438;
+  --game-165c36: #165c36;
+  --game-752c2c: #752c2c;
+  --game-8fcfff: #8fcfff;
+  --game-09070a: #09070a;
+  --game-f4c85b: #f4c85b;
+  --game-8b5a2b: #8b5a2b;
+  --game-5ce8ff: #5ce8ff;
+  --game-ffffff: #ffffff;
+  --game-9a6432: #9a6432;
+  --game-70441e: #70441e;
+  --game-2b384c: #2b384c;
+  --game-e6e1f2: #e6e1f2;
+  --game-1b1124: #1b1124;
+  --game-c7bed8: #c7bed8;
+  --game-c88d42: #c88d42;
+  --game-d8e4f0: #d8e4f0;
+  --game-e8eef5: #e8eef5;
+  --game-5e3a1a: #5e3a1a;
+  --game-b8844c: #b8844c;
+  --game-9ec5d8: #9ec5d8;
+  --game-2c1d18: #2c1d18;
+  --game-9aa4b4: #9aa4b4;
+  --game-cbd4e2: #cbd4e2;
+  --game-636c7a: #636c7a;
+  --game-464d58: #464d58;
+  --game-e5edf7: #e5edf7;
+  --game-9e642d: #9e642d;
+  --game-c4833f: #c4833f;
+  --game-78491f: #78491f;
+  --game-5ea8ff: #5ea8ff;
+  --game-d9be8b: #d9be8b;
+  --game-ebd5a7: #ebd5a7;
+  --game-bfa16d: #bfa16d;
+  --game-d94545: #d94545;
+  --game-4e7840: #4e7840;
+  --game-8b7d70: #8b7d70;
+  --game-e85040: #e85040;
+  --game-d49526: #d49526;
+  --game-fff099: #fff099;
+  --game-e84050: #e84050;
+  --game-c02030: #c02030;
+  --game-ff98a4: #ff98a4;
+  --game-8fe0ff: #8fe0ff;
+  --game-469cff: #469cff;
+  --game-2c72d8: #2c72d8;
+  --game-1e54aa: #1e54aa;
+  --game-d9f6ff: #d9f6ff;
+  --game-ff4868: #ff4868;
+  --game-070506: #070506;
+  --game-f4e8cf: #f4e8cf;
+  --game-080503: #080503;
+  --game-1d140e: #1d140e;
+  --game-090605: #090605;
+  --game-bba88a: #bba88a;
+  --game-fff2f2: #fff2f2;
+  --game-140e0a: #140e0a;
+  --game-1a0f05: #1a0f05;
+  --game-0a0810: #0a0810;
+  --game-211610: #211610;
+  --game-ff7040: #ff7040;
+  --game-ffe89e: #ffe89e;
+  --game-d9e4f2: #d9e4f2;
+  --game-fff2d2: #fff2d2;
+  --game-d5c5a6: #d5c5a6;
+  --game-b8a586: #b8a586;
+  --game-f7ebd3: #f7ebd3;
+  --game-bba888: #bba888;
+  --game-d6c7aa: #d6c7aa;
+  --game-cfc0a2: #cfc0a2;
+  --game-f4fff4: #f4fff4;
+  --game-08060a: #08060a;
+  --game-19151c: #19151c;
+  --game-1e4b7a: #1e4b7a;
+  --game-4a434c: #4a434c;
+  --game-204e28: #204e28;
+  --game-746552: #746552;
+  --game-8c744c: #8c744c;
+  --game-b59660: #b59660;
+  --game-362b3d: #362b3d;
+  --game-4a7c45: #4a7c45;
+  --game-ffe46b: #ffe46b;
+  --game-ffea40: #ffea40;
+  --game-ff4848: #ff4848;
+  --game-080604: #080604;
+  --game-fff1d0: #fff1d0;
+  --game-fff3a8: #fff3a8;
+  --game-e84a56: #e84a56;
+  --game-9c1d28: #9c1d28;
+  --game-000: #000;
+  --game-4da4ff: #4da4ff;
+  --game-1e5bc0: #1e5bc0;
+  --game-e7f4ff: #e7f4ff;
+  --game-cbb899: #cbb899;
+  --game-ff8a48: #ff8a48;
+  --game-120d09: #120d09;
+  --game-7cc2ff: #7cc2ff;
+  --game-3a2a1d: #3a2a1d;
+  --game-e8e8e8: #e8e8e8;
+  --game-6a5c4d: #6a5c4d;
+  --game-a69276: #a69276;
+  --game-7e6e5c: #7e6e5c;
+  --game-d4c3a4: #d4c3a4;
+  --game-a0e8ff: #a0e8ff;
+  --game-2b1f15: #2b1f15;
+  --game-9b896f: #9b896f;
+  --game-5aa8ff: #5aa8ff;
+  --game-ff7860: #ff7860;
+  --game-60e0a0: #60e0a0;
+  --game-60d080: #60d080;
+  --game-c25ef0: #c25ef0;
+  --game-451970: #451970;
+  --game-f0d0ff: #f0d0ff;
+  --game-8ee89a: #8ee89a;
+  --game-ff8080: #ff8080;
+  --game-153257: #153257;
+  --game-194375: #194375;
+  --game-d6c8ad: #d6c8ad;
+  --game-8c7a62: #8c7a62;
+  --game-caa86a: #caa86a;
+  --game-d4b475: #d4b475;
+  --game-1f4e27: #1f4e27;
+  --game-5d5a66: #5d5a66;
+  --game-4d8a4b: #4d8a4b;
+  --game-ff3848: #ff3848;
+  --game-dfd1b5: #dfd1b5;
+  --game-ff6060: #ff6060;
+  --game-overlay-0: rgba(10,8,14,0.92);
+  --game-overlay-1: rgba(12,9,16,0.72);
+  --game-overlay-2: rgba(8,6,12,0.58);
+  --game-overlay-3: rgba(9,7,10,0.96);
+  --game-frame-shadow: inset 0 2px 0 var(--game-8a6438), inset 0 -3px 0 var(--game-090605), 3px 3px 0 var(--game-090605);
+  --game-gold-shadow: inset 0 2px 0 var(--game-fff2d2), inset 0 -3px 0 var(--game-8a6438), 3px 3px 0 var(--game-090605);
+}
+@theme inline {
+  --font-display: "Trebuchet MS", sans-serif;
+  --font-pixel-mono: "Courier New", monospace;
+}
+.pixelated { image-rendering: pixelated; }
+.px-frame, .px-frame-gold { position: relative; border: 2px solid var(--game-8a6438); background: var(--game-1d140e); box-shadow: var(--game-frame-shadow); border-radius: 0; }
+.px-frame-gold { border-color: var(--game-f4c85b); }
+.px-inset { background: var(--game-090605); border: 1px solid var(--game-8a6438); }
+.px-slot, .px-slot-active { background: var(--game-211610); border: 1px solid var(--game-8a6438); }
+.px-slot-active { border-color: var(--game-f4c85b); }
+.px-btn { border-radius: 0; letter-spacing: 0; cursor: pointer; border: 2px solid var(--game-8a6438); background: var(--game-211610); color: var(--game-f4e8cf); box-shadow: var(--game-frame-shadow); transition: filter 120ms; }
+.px-btn:hover { filter: brightness(1.12); }
+.px-btn:disabled { opacity: .45; cursor: not-allowed; }
+.px-btn-gold { background: var(--game-f4c85b); color: var(--game-1a0f05); box-shadow: var(--game-gold-shadow); }
+.px-btn-emerald { background: var(--game-165c36); color: var(--game-f4fff4); }
+.px-btn-crimson { background: var(--game-752c2c); color: var(--game-fff2f2); }
+.px-scroll { scrollbar-width: thin; scrollbar-color: var(--game-8a6438) var(--game-090605); }
+body { margin: 0; font-family: "Trebuchet MS", sans-serif; }
+[class*="tracking-"] { letter-spacing: 0; }
+@media (prefers-reduced-motion: reduce) { .px-btn { transition: none; } }

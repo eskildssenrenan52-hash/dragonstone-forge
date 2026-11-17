@@ -1,0 +1,56 @@
+{
+  "source": "untitled.zip",
+  "capabilities": [
+    {
+      "capability": "game code and rules",
+      "source": "src",
+      "outcome": "migrate",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "offline saved progress",
+      "source": "engine.ts localStorage",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "visual styles and title background",
+      "source": "empty src/index.css and missing title image",
+      "outcome": "recreate",
+      "status": "verified",
+      "next_action": null,
+      "evidence": "Recreated missing styles and generated citadel title image; preserved source UI and class previews."
+    },
+    {
+      "capability": "schema, records, users and authorization",
+      "source": "no database or auth call sites",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "external providers, secrets, public endpoints, callbacks, webhooks and schedules",
+      "source": "no external service call sites",
+      "outcome": "not applicable",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "procedural sprites, textures and audio",
+      "source": "pixelSprites.ts, worldTextures.ts, audio.ts",
+      "outcome": "preserve",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "cutover and verification",
+      "source": "Lovable root page",
+      "outcome": "replace",
+      "status": "verified",
+      "next_action": null,
+      "evidence": "10 original tests passed; desktop and 390px/770px browser checks; movement 160,164 to 160,169; inventory/mining/crafting/map dialogs; F5 save and Continue restored 160,169; no page errors; latest harness build OK."
+    }
+  ]
+}

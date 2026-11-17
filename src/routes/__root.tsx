@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -34,11 +35,11 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(error instanceof Error ? error : new Error(String(error)), { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -77,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Eternal Realms — RPG de ação offline" },
+      { title: "Dragonstone Forge — RPG de ação offline" },
       { name: "description", content: "Explore o continente de Asterion: 40 biomas, masmorras profundas, chefes e loot lendário. Um RPG 2D de ação para jogar direto no navegador." },
-      { name: "author", content: "Eternal Realms" },
-      { property: "og:title", content: "Eternal Realms" },
+      { name: "author", content: "Dragonstone Forge" },
+      { property: "og:title", content: "Dragonstone Forge" },
       { property: "og:description", content: "RPG 2D offline com 40 biomas, cavernas e chefes épicos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -101,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
